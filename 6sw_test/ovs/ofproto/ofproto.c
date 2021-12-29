@@ -2213,7 +2213,7 @@ void abnormal_detect1(struct ofproto *p)
           p->data_counter1++;
         }
          // p->count_1 = p->data_counter1;
-          if(p->data_counter1==DATANUM)
+          if(p->data_counter1==DATANUM+10)
           {
             p->writing1 = 0;
           //p->data_counter1=0;
