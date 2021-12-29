@@ -876,7 +876,7 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
     /* Set the initial tables version. */
     ofproto_bump_tables_version(ofproto);
     FILE *fp;
-    fp = fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/dpid.log","a+");
+    fp = fopen("/home/iot_team/6sw_fil_master/6sw_test/result/dpid.log","a+");
       fprintf(fp, "%ld\n",ofproto->datapath_id);
       fclose(fp);
 
@@ -2153,6 +2153,7 @@ void abnormal_detect1(struct ofproto *p)
     time_t current_time1=time(NULL);
     FILE *fp1;
     
+    
     if(current_time1 - p->last_time1>=CYCLE)
     {  
       //trigger_send_anomaly_detection(p);  
@@ -2171,25 +2172,34 @@ void abnormal_detect1(struct ofproto *p)
       now_recorded_n_bytes1_p2=ops1_p2.stats.rx_bytes;
       now_recorded_n_flow1_p2=get_packet_in_counter_port2();
 
+    
+    
+    
+
       current_flow1=((float)(now_recorded_n_flow1-p->last_recorded_n_flow1))/CYCLE;
       current_traf1=abs(((double)now_recorded_n_bytes1-p->last_recorded_n_bytes1))/CYCLE;
       
-      fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording1.log","a+");
+      
+      
+      fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording1.log","a+");
       fprintf(fp1, "%f,%f\n",current_flow1,current_traf1);
       fclose(fp1);
+      
 
       current_flow1_p2=((float)(now_recorded_n_flow1_p2-p->last_recorded_n_flow1_p2))/CYCLE;
       current_traf1_p2=abs(((double)now_recorded_n_bytes1_p2-p->last_recorded_n_bytes1_p2))/CYCLE;
+     
       
-      fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording1_p2.log","a+");
-    //   fprintf(fp1, "%f,%f\n",current_flow1_p2,current_traf1_p2);
-    //   fclose(fp1);
+      fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording1_p2.log","a+");
+      fprintf(fp1, "%f,%f\n",current_flow1_p2,current_traf1_p2);
+      fclose(fp1);
 
 
       if(p->training1==1)
      {    
+         
         // if(p->data_counter1==0 || p->data_counter1 == DATANUM)
-        //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training1.log","r");  //read only for read in calculate
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1.log","r");  //read only for read in calculate
         /*check training file exist or not .if not exist or not enough data, recording.
           if exists , move to calculating*/
         //if(fp1==NULL || p->writing1 == 1)
@@ -2197,21 +2207,17 @@ void abnormal_detect1(struct ofproto *p)
         if(p->data_counter1 == 0 || p->writing1 == 1)
         {
           p->writing1=1;
-        //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training1.log","a+");
+         
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1.log","a+");
         //   fprintf(fp1, "%f,%f\n",current_flow1,current_traf1);
         //   fclose(fp1);
-          
-          if ((current_flow1 !=0 && current_traf1 !=0))
-          //if (!(current_flow1 <=0 && current_traf1 <=0))
-        //   if (!(current_flow1 <=0 && current_traf1 <=0))
-        {
-             fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training1.log","a+");
-          fprintf(fp1, "%f,%f\n",current_flow1,current_traf1);
-          fclose(fp1);
-            p->flow_arr1[p->data_counter1] = current_flow1;
-            p->traffic_arr1[p->data_counter1] = current_traf1;
-          p->data_counter1++;
-        }
+        
+        if ((current_flow1 !=0 && current_traf1 !=0)){
+                
+                
+            //if (!(current_flow1 <=0 && current_traf1 <=0))
+            //   if (!(current_flow1 <=0 && current_traf1 <=0))
+            //{
             if(p->data_counter1>=10){
                 fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1.log","a+");
                 fprintf(fp1, "%f,%f\n",current_flow1,current_traf1);
@@ -2222,12 +2228,18 @@ void abnormal_detect1(struct ofproto *p)
             p->data_counter1++;
                     //}
             }
+         
+           
+            
+
+        
          // p->count_1 = p->data_counter1;
           if(p->data_counter1==DATANUM+10)
           {
             p->writing1 = 0;
           //p->data_counter1=0;
           }
+         
         }
         /*start calculating*/
         else if (p->writing1 ==0)
@@ -2257,7 +2269,7 @@ void abnormal_detect1(struct ofproto *p)
          
           make_NN_train(p->Data1,p->data_counter1);
           float temp1;
-        //   fp1= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug1.log","a+");
+        //   fp1= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug1.log","a+");
           for(int i=0;i<p->data_counter1;i++)
           {
            p->Data1[i]->LoOP = LoOP(p->Data1[i],p->Data1);
@@ -2271,10 +2283,10 @@ void abnormal_detect1(struct ofproto *p)
           p->loOP_threshold1 = (2.0/3)*p->loOP_threshold1;
             // fclose(fp1);
           gettimeofday(&end1, NULL);
-        //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time1.log","a+");
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time1.log","a+");
         //   fprintf(fp1,"%lu\n",(end1.tv_sec - start1.tv_sec)*1000000+end1.tv_usec-start1.tv_usec);
         //   fclose(fp1);
-        //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training1.log","a+");
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training1.log","a+");
         //   for(int i=0;i<p->data_counter1;i++)
         //   {
         //       fprintf(fp1,"%f,%f,%f,%f\n",p->Data1[i]->n_flow_norm,p->Data1[i]->traffic_norm,p->Data1[i]->LoOP,p->loOP_threshold1);
@@ -2301,7 +2313,7 @@ void abnormal_detect1(struct ofproto *p)
           if (!(p->loOP_status1 >= 0  && p->loOP_status1 <= 1))
             p->loOP_status1 = 0;
         value1_1 = p->loOP_status1;
-        trigger_send_anomaly_detection(p);
+        //trigger_send_anomaly_detection(p);
           if (p->loOP_status1 > p->loOP_threshold1 && p->reported1 == false)
               {
                   p->k_thres1++;
@@ -2315,7 +2327,7 @@ void abnormal_detect1(struct ofproto *p)
                   p->k_thres1 =0;
               }
 
-          fp1= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update1_p1.log","w+");
+          fp1= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update1_p1.log","w+");
           fprintf(fp1,"%f\n",p->loOP_status1);
           fclose(fp1);
           }
@@ -2327,25 +2339,31 @@ void abnormal_detect1(struct ofproto *p)
       if(p->training1_p2==1)
      {    
         // if(p->data_counter1_p2==0 || p->data_counter1_p2 == DATANUM)
-        //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training1_p2.log","r");  //read only for read in calculate
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1_p2.log","r");  //read only for read in calculate
         // if (p->data_counter1_p2 < DATANUM && p->writing1_p2 ==1)
         if (p->data_counter1_p2 == 0 || p->writing1_p2 ==1)
         {
           p->writing1_p2=1;
-          fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training1_p2.log","a+");
-          if ((current_flow1_p2 !=0 && current_traf1_p2 !=0))
-          //if (!(current_flow1_p2 <=0 && current_traf1_p2 <=0))
-          fprintf(fp1, "%f,%f\n",current_flow1_p2,current_traf1_p2);
-          fclose(fp1);
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1_p2.log","a+");
+        //   if ((current_flow1_p2 !=0 && current_traf1_p2 !=0))
+        //   if (!(current_flow1_p2 <=0 && current_traf1_p2 <=0))
+        //   fprintf(fp1, "%f,%f\n",current_flow1_p2,current_traf1_p2);
+        //   fclose(fp1);
+
           if ((current_flow1_p2 !=0 && current_traf1_p2 !=0))
           //if (!(current_flow1_p2 <=0 && current_traf1_p2 <=0))
           {
+              if(p->data_counter1_p2>=10){
+              fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1_p2.log","a+");
+              fprintf(fp1, "%f,%f\n",current_flow1_p2,current_traf1_p2);
+              fclose(fp1);
               p->traffic_arr1_p2[p->data_counter1_p2] = current_traf1_p2;
               p->flow_arr1_p2[p->data_counter1_p2] = current_flow1_p2;
+            }
             p->data_counter1_p2++;
           }
          // p->count_1 = p->data_counter1;
-          if(p->data_counter1_p2 == DATANUM)
+          if(p->data_counter1_p2 == DATANUM+10)
           {
             p->writing1_p2 = 0;
           //p->data_counter1=0;
@@ -2377,12 +2395,12 @@ void abnormal_detect1(struct ofproto *p)
             p->Data1_p2[i]->n_flow_norm=normalize(p->flow_arr1_p2[i],p->flow_mu1_p2,p->flow_sigma1_p2);
           }
          
-        //   fp1 = fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/aver.log","a+");
+        //   fp1 = fopen("/home/iot_team/6sw_fil_master/6sw_test/result/aver.log","a+");
         //   fprintf(fp1,"%f, %f, %f, %f \n",p->traffic_mu1_p2,p->traffic_sigma1_p2, p->flow_mu1_p2,p->flow_sigma1_p2);
         //     fclose(fp1);
           make_NN_train(p->Data1_p2,p->data_counter1_p2);
           float temp1;
-        //   fp1= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug1_p2.log","a+");
+        //   fp1= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug1_p2.log","a+");
           for(int i=0;i<p->data_counter1_p2;i++)
           {
            p->Data1_p2[i]->LoOP = LoOP(p->Data1_p2[i],p->Data1_p2);
@@ -2396,10 +2414,10 @@ void abnormal_detect1(struct ofproto *p)
           p->loOP_threshold1_p2 = (2.0/3)*p->loOP_threshold1_p2;
             // fclose(fp1);
           gettimeofday(&end1_p2, NULL);
-        //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time1_p2.log","a+");
+        //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time1_p2.log","a+");
         //   fprintf(fp1,"%lu\n",(end1_p2.tv_sec - start1_p2.tv_sec)*1000000+end1_p2.tv_usec-start1_p2.tv_usec);
         //   fclose(fp1);
-        // //   fp1=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training1_p2.log","a+");
+        // //   fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training1_p2.log","a+");
         // //   for(int i=0;i<p->data_counter1_p2;i++)
         // //   {
         // //       fprintf(fp1,"%f,%f,%f,%f\n",p->Data1_p2[i]->n_flow_norm,p->Data1_p2[i]->traffic_norm,p->Data1_p2[i]->LoOP,p->loOP_threshold1_p2);
@@ -2425,7 +2443,7 @@ void abnormal_detect1(struct ofproto *p)
             if (!(p->loOP_status1_p2 >= 0  && p->loOP_status1_p2 <= 1))
                 p->loOP_status1_p2 = 0;
             value1_2 = p->loOP_status1_p2;
-		trigger_send_anomaly_detection_p2(p);
+		//trigger_send_anomaly_detection_p2(p);
           if (p->loOP_status1_p2 > p->loOP_threshold1_p2 && p->reported1_p2 == false)
               {
                   p->k_thres1_p2++;
@@ -2439,7 +2457,7 @@ void abnormal_detect1(struct ofproto *p)
                   p->k_thres1_p2 =0;
               }
 
-          fp1= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update1_p2.log","w+");
+          fp1= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update1_p2.log","w+");
           fprintf(fp1,"%f\n",p->loOP_status1_p2);
           fclose(fp1);
           }
@@ -2488,21 +2506,21 @@ void abnormal_detect2(struct ofproto *p)
       current_flow2=((float)(now_recorded_n_flow2-p->last_recorded_n_flow2))/CYCLE;
       current_traf2=abs(((double)now_recorded_n_bytes2-p->last_recorded_n_bytes2))/CYCLE;
       
-      fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording2.log","a+");
-      fprintf(fp2, "%f,%f,",current_flow2,current_traf2);
+      fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording2.log","a+");
+      fprintf(fp2, "%f,%f\n",current_flow2,current_traf2);
       fclose(fp2);
 
       current_flow2_p2=((float)(now_recorded_n_flow2_p2-p->last_recorded_n_flow2_p2))/CYCLE;
       current_traf2_p2=abs(((double)now_recorded_n_bytes2_p2-p->last_recorded_n_bytes2_p2))/CYCLE;
       
-    //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording2_p2.log","a+");
-    //   fprintf(fp2, "%f,%f,",current_flow2_p2,current_traf2_p2);
-    //   fclose(fp2);
+      fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording2_p2.log","a+");
+      fprintf(fp2, "%f,%f\n",current_flow2_p2,current_traf2_p2);
+      fclose(fp2);
 
       if(p->training2==21)
      {    
         // if(p->data_counter2==0 || p->data_counter2 == DATANUM)
-        //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training2.log","r");
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training2.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp2==NULL || p->writing2 == 1)
@@ -2510,20 +2528,25 @@ void abnormal_detect2(struct ofproto *p)
         if (p->data_counter2 ==0 || p->writing2 ==1)
         {
           p->writing2=1;
-          fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training2.log","a+");
-          if ((current_flow2 != 0 && current_traf2 != 0))
+          //fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training2.log","a+");
+          //if ((current_flow2 != 0 && current_traf2 != 0))
           //if (!(current_flow2 <= 0 && current_traf2 <= 0))
-          fprintf(fp2, "%f,%f\n",current_flow2,current_traf2);
-          fclose(fp2);
+          //fprintf(fp2, "%f,%f\n",current_flow2,current_traf2);
+          //fclose(fp2);
           if ((current_flow2 != 0 && current_traf2 != 0))
           //if (!(current_flow2 <= 0 && current_traf2 <= 0))
           {
-              p->traffic_arr2[p->data_counter2] = current_traf2;
-              p->flow_arr2[p->data_counter2] = current_flow2;
+              if(p->data_counter2>=10){
+                fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training2.log","a+");
+                fprintf(fp2, "%f,%f\n",current_flow2,current_traf2);
+                fclose(fp2);
+                p->traffic_arr2[p->data_counter2] = current_traf2;
+                p->flow_arr2[p->data_counter2] = current_flow2;
+              }
             p->data_counter2++;
           }
             //b = p->data_counter2;
-          if(p->data_counter2==DATANUM)
+          if(p->data_counter2==DATANUM+10)
           {
             p->writing2 =2;
             //p->data_counter2=0;  //co the bỏ đi và điều kiện else phía dưới đổi thành p->data_c == DATANUM
@@ -2557,7 +2580,7 @@ void abnormal_detect2(struct ofproto *p)
                 
           make_NN_train(p->Data2,p->data_counter2);
           float temp2;
-        //   fp2= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug2.log","a+");
+        //   fp2= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug2.log","a+");
           for(int i=0;i<p->data_counter2;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -2577,10 +2600,10 @@ void abnormal_detect2(struct ofproto *p)
           p->loOP_threshold2 = (2.0/3)*p->loOP_threshold2;
             // fclose(fp2);
           gettimeofday(&end2, NULL);
-        //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time2.log","a+");
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time2.log","a+");
         //   fprintf(fp2,"%lu\n",(end2.tv_sec - start2.tv_sec)*1000000+end2.tv_usec-start2.tv_usec);
         //   fclose(fp2);
-        //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training2.log","a+");
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training2.log","a+");
         //   for(int i=0;i<p->data_counter2;i++)
         //   {
         //       fprintf(fp2,"%f,%f,%f,%f\n",p->Data2[i]->n_flow_norm,p->Data2[i]->traffic_norm,p->Data2[i]->LoOP,p->loOP_threshold2);
@@ -2605,7 +2628,7 @@ void abnormal_detect2(struct ofproto *p)
         if (!(p->loOP_status2 >= 0  && p->loOP_status2 <= 1))
                 p->loOP_status2 = 0;
             value2_1 = p->loOP_status2;
-		trigger_send_anomaly_detection2_p1(p);
+		//trigger_send_anomaly_detection2_p1(p);
           if (p->loOP_status2 > p->loOP_threshold2 && p->reported2 == false)
               {
                   p->k_thres2++;
@@ -2619,7 +2642,7 @@ void abnormal_detect2(struct ofproto *p)
                   p->k_thres2 =0;
               }
 
-          fp2= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update2_p1.log","w+");
+          fp2= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update2_p1.log","w+");
           fprintf(fp2,"%f\n",p->loOP_status2);
           fclose(fp2);
           }
@@ -2633,7 +2656,7 @@ void abnormal_detect2(struct ofproto *p)
       if(p->training2_p2==21)
      {    
         // if(p->data_counter2_p2==0 || p->data_counter2_p2 == DATANUM)
-        //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training2_p2.log","r");
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training2_p2.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp2==NULL || p->writing2 == 1)
@@ -2641,20 +2664,26 @@ void abnormal_detect2(struct ofproto *p)
         if (p->data_counter2_p2 ==0 || p->writing2_p2 ==1)
         {
           p->writing2_p2=1;
-          fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training2_p2.log","a+");
-          if ((current_flow2_p2 != 0 && current_traf2_p2 != 0))
-          //if (!(current_flow2_p2 <= 0 && current_traf2_p2 <= 0))
-          fprintf(fp2, "%f,%f\n",current_flow2_p2,current_traf2_p2);
-          fclose(fp2);
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training2_p2.log","a+");
+        //   if ((current_flow2_p2 != 0 && current_traf2_p2 != 0))
+        //   //if (!(current_flow2_p2 <= 0 && current_traf2_p2 <= 0))
+        //   fprintf(fp2, "%f,%f\n",current_flow2_p2,current_traf2_p2);
+        //   fclose(fp2);
           if ((current_flow2_p2 != 0 && current_traf2_p2 != 0))
           //if (!(current_flow2_p2 <= 0 && current_traf2_p2 <= 0))
           {
-              p->flow_arr2_p2[p->data_counter2_p2] = current_flow2_p2;
-              p->traffic_arr2_p2[p->data_counter2_p2] = current_traf2_p2;
+            if(p->data_counter2_p2>=10){
+                  fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training2_p2.log","a+");
+                fprintf(fp2, "%f,%f\n",current_flow2_p2,current_traf2_p2);
+                fclose(fp2);
+                 p->flow_arr2_p2[p->data_counter2_p2] = current_flow2_p2;
+                p->traffic_arr2_p2[p->data_counter2_p2] = current_traf2_p2;
+            }
             p->data_counter2_p2++;
+
           }
             //b = p->data_counter2;
-          if(p->data_counter2_p2==DATANUM)
+          if(p->data_counter2_p2==DATANUM+10)
           {
             p->writing2_p2 =2;
             //p->data_counter2=0;  //co the bỏ đi và điều kiện else phía dưới đổi thành p->data_c == DATANUM
@@ -2679,7 +2708,7 @@ void abnormal_detect2(struct ofproto *p)
           p->traffic_sigma2_p2=calc_sigma(p->traffic_arr2_p2,p->data_counter2_p2);
           p->flow_mu2_p2=calc_mu(p->flow_arr2_p2,p->data_counter2_p2);
           p->flow_sigma2_p2=calc_sigma(p->flow_arr2_p2,p->data_counter2_p2);
-        //   fp2 = fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/aver.log","a+");
+        //   fp2 = fopen("/home/iot_team/6sw_fil_master/6sw_test/result/aver.log","a+");
         //   fprintf(fp2,"%f, %f, %f, %f \n",p->traffic_mu2_p2,p->traffic_sigma2_p2, p->flow_mu2_p2,p->flow_sigma2_p2);
         //     fclose(fp2);
           for (int i=0;i<p->data_counter2_p2;i++)
@@ -2690,7 +2719,7 @@ void abnormal_detect2(struct ofproto *p)
                 
           make_NN_train(p->Data2_p2,p->data_counter2_p2);
           float temp2;
-        //   fp2= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug2_p2.log","a+");
+        //   fp2= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug2_p2.log","a+");
           for(int i=0;i<p->data_counter2_p2;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -2710,10 +2739,10 @@ void abnormal_detect2(struct ofproto *p)
           p->loOP_threshold2_p2 = (2.0/3)*p->loOP_threshold2_p2;
             // fclose(fp2);
           gettimeofday(&end2_p2, NULL);
-        //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time2_p2.log","a+");
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time2_p2.log","a+");
         //   fprintf(fp2,"%lu\n",(end2_p2.tv_sec - start2_p2.tv_sec)*1000000+end2_p2.tv_usec-start2_p2.tv_usec);
         //   fclose(fp2);
-        //   fp2=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training2_p2.log","a+");
+        //   fp2=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training2_p2.log","a+");
         //   for(int i=0;i<p->data_counter2_p2;i++)
         //   {
         //       fprintf(fp2,"%f,%f,%f,%f\n",p->Data2_p2[i]->n_flow_norm,p->Data2_p2[i]->traffic_norm,p->Data2_p2[i]->LoOP,p->loOP_threshold2_p2);
@@ -2737,7 +2766,7 @@ void abnormal_detect2(struct ofproto *p)
             if (!(p->loOP_status2 >=0 && p->loOP_status2 <= 1))
                 p->loOP_status2 = 0;
             value2_2 = p->loOP_status2;
-		trigger_send_anomaly_detection2_p2(p);
+		//trigger_send_anomaly_detection2_p2(p);
           if (p->loOP_status2 > p->loOP_threshold2 && p->reported2 == false)
               {
                   p->k_thres2++;
@@ -2751,7 +2780,7 @@ void abnormal_detect2(struct ofproto *p)
                   p->k_thres2 =0;
               }
 
-          fp2= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update2_p2.log","w+");
+          fp2= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update2_p2.log","w+");
           fprintf(fp2,"%f\n",p->loOP_status2);
           fclose(fp2);
           }
@@ -2802,21 +2831,21 @@ void abnormal_detect3(struct ofproto *p)
       current_flow3=((float)(now_recorded_n_flow3-p->last_recorded_n_flow3))/CYCLE;
       current_traf3=abs(((double)now_recorded_n_bytes3-p->last_recorded_n_bytes3))/CYCLE;
 
-      fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording3.log","a+");
+      fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording3.log","a+");
       fprintf(fp3, "%f,%f\n",current_flow3,current_traf3);
       fclose(fp3);
 
       current_flow3_p2=((float)(now_recorded_n_flow3_p2-p->last_recorded_n_flow3_p2))/CYCLE;
       current_traf3_p2=abs(((double)now_recorded_n_bytes3_p2-p->last_recorded_n_bytes3_p2))/CYCLE;
       
-    //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording3_p2.log","a+");
-    //   fprintf(fp3, "%f,%f\n",current_flow3_p2,current_traf3_p2);
-    //   fclose(fp3);
+      fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording3_p2.log","a+");
+      fprintf(fp3, "%f,%f\n",current_flow3_p2,current_traf3_p2);
+      fclose(fp3);
 
       if(p->training3==31)
      {    
         // if(p->data_counter3==0 || p->data_counter3 == DATANUM)
-        //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training3.log","r");
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training3.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp3==NULL || p->writing3 == 1)
@@ -2824,20 +2853,25 @@ void abnormal_detect3(struct ofproto *p)
         if (p->data_counter3 ==0 || p->writing3 ==1)
         {
           p->writing3=1;
-          fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training3.log","a+");
-          if ((current_flow3 !=0 && current_traf3 !=0))
+          //fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training3.log","a+");
+          //if ((current_flow3 !=0 && current_traf3 !=0))
           //if (!(current_flow3 <= 0 && current_traf3 <= 0))
-          fprintf(fp3, "%f,%f\n",current_flow3,current_traf3);
-          fclose(fp3);
+          //fprintf(fp3, "%f,%f\n",current_flow3,current_traf3);
+          //fclose(fp3);
           //if (!(current_flow3 <=0 && current_traf3 <=0))
           if ((current_flow3 !=0 && current_traf3 !=0))
           {
-            p->flow_arr3[p->data_counter3] = current_flow3;
-            p->traffic_arr3[p->data_counter3] = current_traf3;
+              if(p->data_counter3>=10){
+                fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training3.log","a+");
+                fprintf(fp3, "%f,%f\n",current_flow3,current_traf3);
+                fclose(fp3); 
+                p->flow_arr3[p->data_counter3] = current_flow3;
+                p->traffic_arr3[p->data_counter3] = current_traf3;
+            }
             p->data_counter3++;
           }
             p->count_3 = p->data_counter3;
-          if(p->data_counter3==DATANUM)
+          if(p->data_counter3==DATANUM+10)
           {
             p->writing3 =3;
             // if (p->writing3 ==3)
@@ -2873,7 +2907,7 @@ void abnormal_detect3(struct ofproto *p)
           }
           make_NN_train(p->Data3,p->data_counter3);
           float temp3;
-        //   fp3= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug3.log","a+");
+        //   fp3= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug3.log","a+");
           for(int i=0;i<p->data_counter3;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -2893,10 +2927,10 @@ void abnormal_detect3(struct ofproto *p)
           p->loOP_threshold3 = (2.0/3)*p->loOP_threshold3;
             // fclose(fp3);
           gettimeofday(&end3, NULL);
-        //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time3.log","a+");
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time3.log","a+");
         //   fprintf(fp3,"%lu\n",(end3.tv_sec - start3.tv_sec)*1000000+end3.tv_usec-start3.tv_usec);
         //   fclose(fp3);
-        //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training3.log","a+");
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training3.log","a+");
         //   for(int i=0;i<p->data_counter3;i++)
         //   {
         //       fprintf(fp3,"%f,%f,%f,%f\n",p->Data3[i]->n_flow_norm,p->Data3[i]->traffic_norm,p->Data3[i]->LoOP,p->loOP_threshold3);
@@ -2921,7 +2955,7 @@ void abnormal_detect3(struct ofproto *p)
             if (!(p->loOP_status3 >=0 && p->loOP_status3 <= 1))
                 p->loOP_status3 = 0;
             value3_1 = p->loOP_status3;
-		trigger_send_anomaly_detection3_p1(p);
+		//trigger_send_anomaly_detection3_p1(p);
           if (p->loOP_status3 > p->loOP_threshold3 && p->reported3 == false)
               {
                   p->k_thres3++;
@@ -2935,12 +2969,12 @@ void abnormal_detect3(struct ofproto *p)
                   p->k_thres3 =0;
               }
 
-          fp3= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update3_p1.log","w+");
+          fp3= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update3_p1.log","w+");
           fprintf(fp3,"%f\n",p->loOP_status3);
           fclose(fp3);
           }
       }
-    //    fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/count2.log","a+");
+    //    fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/count2.log","a+");
     //       fprintf(fp3, "%d, %d, %d\n",p->data_counter3,p->writing3,p->training3);
     //       fclose(fp3);
       p->last_recorded_n_bytes3=(double)now_recorded_n_bytes3;
@@ -2951,7 +2985,7 @@ void abnormal_detect3(struct ofproto *p)
       if(p->training3_p2==31)
      {    
         // if(p->data_counter3_p2==0 || p->data_counter3_p2 == DATANUM)
-        //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training3_p2.log","r");
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training3_p2.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp3==NULL || p->writing3 == 1)
@@ -2959,20 +2993,25 @@ void abnormal_detect3(struct ofproto *p)
         if (p->data_counter3_p2 == 0 || p->writing3_p2 ==1)
         {
           p->writing3_p2=1;
-          fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training3_p2.log","a+");
-          if ((current_flow3_p2 !=0 && current_traf3_p2 !=0))
-          //if (!(current_flow3_p2 <=0 && current_traf3_p2 <=0))
-          fprintf(fp3, "%f,%f\n",current_flow3_p2,current_traf3_p2);
-          fclose(fp3);
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training3_p2.log","a+");
+        //   if ((current_flow3_p2 !=0 && current_traf3_p2 !=0))
+        //   //if (!(current_flow3_p2 <=0 && current_traf3_p2 <=0))
+        //   fprintf(fp3, "%f,%f\n",current_flow3_p2,current_traf3_p2);
+        //   fclose(fp3);
           if ((current_flow3_p2 !=0 && current_traf3_p2 !=0))
           //if (!(current_flow3_p2 <=0 && current_traf3_p2 <=0))
           {
-              p->flow_arr3_p2[p->data_counter3_p2] = current_flow3_p2;
-              p->traffic_arr3_p2[p->data_counter3_p2] = current_traf3_p2;
+              if(p->data_counter3_p2>=10){
+                fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training3_p2.log","a+");
+                fprintf(fp3, "%f,%f\n",current_flow3_p2,current_traf3_p2);
+                fclose(fp3);  
+                p->flow_arr3_p2[p->data_counter3_p2] = current_flow3_p2;
+                p->traffic_arr3_p2[p->data_counter3_p2] = current_traf3_p2;
+            }
              p->data_counter3_p2++;
           }
            // p->count_3 = p->data_counter3;
-          if(p->data_counter3_p2==DATANUM)
+          if(p->data_counter3_p2==DATANUM+10)
           {
             p->writing3_p2 =3;
             // if (p->writing3 ==3)
@@ -3008,7 +3047,7 @@ void abnormal_detect3(struct ofproto *p)
           }
           make_NN_train(p->Data3_p2,p->data_counter3_p2);
           float temp3_p2;
-        //   fp3= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug3_p2.log","a+");
+        //   fp3= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug3_p2.log","a+");
           for(int i=0;i<p->data_counter3_p2;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3028,10 +3067,10 @@ void abnormal_detect3(struct ofproto *p)
           p->loOP_threshold3_p2 = (2.0/3)*p->loOP_threshold3_p2;
             // fclose(fp3);
           gettimeofday(&end3_p2, NULL);
-        //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time3_p2.log","a+");
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time3_p2.log","a+");
         //   fprintf(fp3,"%lu\n",(end3_p2.tv_sec - start3_p2.tv_sec)*1000000+end3_p2.tv_usec-start3_p2.tv_usec);
         //   fclose(fp3);
-        //   fp3=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training3_p2.log","a+");
+        //   fp3=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training3_p2.log","a+");
         //   for(int i=0;i<p->data_counter3_p2;i++)
         //   {
         //       fprintf(fp3,"%f,%f,%f,%f\n",p->Data3_p2[i]->n_flow_norm,p->Data3_p2[i]->traffic_norm,p->Data3_p2[i]->LoOP,p->loOP_threshold3_p2);
@@ -3055,7 +3094,7 @@ void abnormal_detect3(struct ofproto *p)
             if (!(p->loOP_status3_p2 >=0 && p->loOP_status3_p2 <= 1))
                 p->loOP_status3_p2 = 0;
             value3_2 = p->loOP_status3_p2;
-		trigger_send_anomaly_detection3_p2(p);
+		//trigger_send_anomaly_detection3_p2(p);
           if (p->loOP_status3_p2 > p->loOP_threshold3_p2 && p->reported3_p2 == false)
               {
                   p->k_thres3_p2++;
@@ -3069,7 +3108,7 @@ void abnormal_detect3(struct ofproto *p)
                   p->k_thres3_p2 =0;
               }
 
-          fp3= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update3_p2.log","w+");
+          fp3= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update3_p2.log","w+");
           fprintf(fp3,"%f\n",p->loOP_status3_p2);
           fclose(fp3);
           }
@@ -3147,22 +3186,26 @@ void abnormal_detect4(struct ofproto *p)
       current_flow4_p4 = ((float)(now_recorded_n_flow4_p4 - p->last_recorded_n_flow4_p4))/CYCLE;
       current_traf4_p4 = abs(((double)now_recorded_n_bytes4_p4 - p->last_recorded_n_bytes4_p4))/CYCLE;
       
-    //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording4.log","a+");
-    //   fprintf(fp4, "%f,%f,",current_flow4,current_traf4);
-    //   fclose(fp4);
+      fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording4.log","a+");
+      fprintf(fp4, "%f,%f\n",current_flow4,current_traf4);
+      fclose(fp4);
 
-      fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording4_p2.log","a+");
+      fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording4_p2.log","a+");
       fprintf(fp4, "%f,%f\n",current_flow4_p2,current_traf4_p2);
       fclose(fp4);
 
-      fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording4_p3.log","a+");
-      fprintf(fp4, "%f,%f,\n",current_flow4_p3,current_traf4_p3);
+      fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording4_p3.log","a+");
+      fprintf(fp4, "%f,%f\n",current_flow4_p3,current_traf4_p3);
+      fclose(fp4);
+
+      fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording4_p4.log","a+");
+      fprintf(fp4, "%f,%f\n",current_flow4_p4,current_traf4_p4);
       fclose(fp4);
 
       if(p->training4==41)
      {    
         // if(p->data_counter4==0 || p->data_counter4 == DATANUM)
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4.log","r");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp4==NULL || p->writing4 == 1)
@@ -3170,19 +3213,24 @@ void abnormal_detect4(struct ofproto *p)
         if (p->data_counter4 == 0 || p->writing4 ==1)
         {
           p->writing4=1;
-          fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4.log","a+");
-          if ((current_flow4 !=0 && current_traf4 !=0))
-          //if (!(current_flow4 <=0 && current_traf4 <=0))
-          fprintf(fp4, "%f,%f\n",current_flow4,current_traf4);
-          fclose(fp4);
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4.log","a+");
+        //   if ((current_flow4 !=0 && current_traf4 !=0))
+        //   //if (!(current_flow4 <=0 && current_traf4 <=0))
+        //   fprintf(fp4, "%f,%f\n",current_flow4,current_traf4);
+        //   fclose(fp4);
           if ((current_flow4 !=0 && current_traf4 !=0))
           //if (!(current_flow4 <=0 && current_traf4 <=0))
           {
-              p->flow_arr4[p->data_counter4] = current_flow4;
-              p->traffic_arr4[p->data_counter4] = current_traf4;
+              if(p->data_counter4>=10){
+                fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4.log","a+");
+                fprintf(fp4, "%f,%f\n",current_flow4,current_traf4);
+                fclose(fp4);
+                p->flow_arr4[p->data_counter4] = current_flow4;
+                p->traffic_arr4[p->data_counter4] = current_traf4;
+              }
             p->data_counter4++;
           }
-          if(p->data_counter4==DATANUM)
+          if(p->data_counter4==DATANUM+10)
           {
             p->writing4 =4;
             //p->data_counter4=0;
@@ -3220,7 +3268,7 @@ void abnormal_detect4(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data4,p->data_counter4);
           float temp4;
-        //   fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug4.log","a+");
+        //   fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug4.log","a+");
           for(int i=0;i<p->data_counter4;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3240,10 +3288,10 @@ void abnormal_detect4(struct ofproto *p)
           p->loOP_threshold4 = (2.0/3)*p->loOP_threshold4;
             // fclose(fp4);
           gettimeofday(&end4, NULL);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time4.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time4.log","a+");
         //   fprintf(fp4,"%lu\n",(end4.tv_sec - start4.tv_sec)*1000000+end4.tv_usec-start4.tv_usec);
         //   fclose(fp4);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training4.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training4.log","a+");
         //   for(int i=0;i<p->data_counter4;i++)
         //   {
         //       fprintf(fp4,"%f,%f,%f,%f\n",p->Data4[i]->n_flow_norm,p->Data4[i]->traffic_norm,p->Data4[i]->LoOP,p->loOP_threshold4);
@@ -3268,7 +3316,7 @@ void abnormal_detect4(struct ofproto *p)
         if (!(p->loOP_status4 >=0 && p->loOP_status4 <= 1))
                 p->loOP_status4 = 0;
         value4_1 = p->loOP_status4;
-	trigger_send_anomaly_detection4_p1(p);
+	//trigger_send_anomaly_detection4_p1(p);
           if (p->loOP_status4 > p->loOP_threshold4 && p->reported4 == false)
               {
                   p->k_thres4++;
@@ -3282,7 +3330,7 @@ void abnormal_detect4(struct ofproto *p)
                   p->k_thres4 =0;
               }
 
-          fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update4_p1.log","w+");
+          fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update4_p1.log","w+");
           fprintf(fp4,"%f\n",p->loOP_status4);
           fclose(fp4);
           }
@@ -3296,26 +3344,31 @@ void abnormal_detect4(struct ofproto *p)
       if(p->training4_p2==41)
      {    
         // if(p->data_counter4_p2==0 || p->data_counter4_p2 == DATANUM)
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4_p2.log","r");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p2.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // if (p->data_counter4_p2 < DATANUM && p->writing4_p2 ==1)
         if (p->data_counter4_p2 == 0 || p->writing4_p2 ==1)
         {
           p->writing4_p2 = 1;
-          fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4_p2.log","a+");
-          if ((current_flow4_p2 !=0 && current_traf4_p2 !=0))
-          //if (!(current_flow4_p2 <=0 && current_traf4_p2 <=0))
-          fprintf(fp4, "%f,%f\n", current_flow4_p2, current_traf4_p2);
-          fclose(fp4);
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p2.log","a+");
+        //   if ((current_flow4_p2 !=0 && current_traf4_p2 !=0))
+        //   //if (!(current_flow4_p2 <=0 && current_traf4_p2 <=0))
+        //   fprintf(fp4, "%f,%f\n", current_flow4_p2, current_traf4_p2);
+        //   fclose(fp4);
           if ((current_flow4_p2 !=0 && current_traf4_p2 !=0))
           //if (!(current_flow4_p2 <=0 && current_traf4_p2 <=0))
           {
+            if(p->data_counter4_p2>=10){
+                fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p2.log","a+");
+                fprintf(fp4, "%f,%f\n", current_flow4_p2, current_traf4_p2);
+                fclose(fp4);
               p->flow_arr4_p2[p->data_counter4_p2] = current_flow4_p2;
               p->traffic_arr4_p2[p->data_counter4_p2] = current_traf4_p2;
+            }
             p->data_counter4_p2++;
           }
-          if(p->data_counter4_p2 == DATANUM)
+          if(p->data_counter4_p2 == DATANUM+10)
           {
             p->writing4_p2 =4;
             //p->data_counter4=0;
@@ -3353,7 +3406,7 @@ void abnormal_detect4(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data4_p2,p->data_counter4_p2);
           float temp4_p2;
-        //   fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug4_p2.log","a+");
+        //   fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug4_p2.log","a+");
           for(int i=0;i<p->data_counter4_p2;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3368,10 +3421,10 @@ void abnormal_detect4(struct ofproto *p)
           p->loOP_threshold4_p2 = (2.0/3) * p->loOP_threshold4_p2;
             // fclose(fp4);
           gettimeofday(&end4_p2, NULL);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time4_p2.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time4_p2.log","a+");
         //   fprintf(fp4,"%lu\n",(end4_p2.tv_sec - start4_p2.tv_sec)*1000000+end4_p2.tv_usec-start4_p2.tv_usec);
         //   fclose(fp4);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training4_p2.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training4_p2.log","a+");
         //   for(int i=0;i<p->data_counter4_p2; i++)
         //   {
         //       fprintf(fp4,"%f,%f,%f,%f\n",p->Data4_p2[i]->n_flow_norm,p->Data4_p2[i]->traffic_norm,p->Data4_p2[i]->LoOP,p->loOP_threshold4_p2);
@@ -3395,7 +3448,7 @@ void abnormal_detect4(struct ofproto *p)
         if (!(p->loOP_status4_p2 >=0 && p->loOP_status4_p2 <= 1))
                 p->loOP_status4_p2 = 0;
             value4_2 = p->loOP_status4_p2;  
-		trigger_send_anomaly_detection4_p2(p);
+		//trigger_send_anomaly_detection4_p2(p);
           if (p->loOP_status4_p2 > p->loOP_threshold4_p2 && p->reported4_p2 == false)
               {
                   p->k_thres4_p2 ++;
@@ -3409,7 +3462,7 @@ void abnormal_detect4(struct ofproto *p)
                   p->k_thres4_p2 =0;
               }
 
-          fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update4_p2.log","w+");
+          fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update4_p2.log","w+");
           fprintf(fp4,"%f\n",p->loOP_status4_p2);
           fclose(fp4);
           }
@@ -3423,26 +3476,31 @@ void abnormal_detect4(struct ofproto *p)
       if(p->training4_p3==41)
      {    
         // if(p->data_counter4_p3==0 || p->data_counter4_p3 == DATANUM)
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4_p3.log","r");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p3.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // if (p->data_counter4_p3 < DATANUM && p->writing4_p3 ==1)
         if (p->data_counter4_p3 == 0 || p->writing4_p3 ==1)
         {
           p->writing4_p3 = 1;
-          fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4_p3.log","a+");
-          if ((current_flow4_p3 !=0 && current_traf4_p3 !=0))
-          //if (!(current_flow4_p3 <=0 && current_traf4_p3 <=0))
-          fprintf(fp4, "%f,%f\n", current_flow4_p3, current_traf4_p3);
-          fclose(fp4);
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p3.log","a+");
+        //   if ((current_flow4_p3 !=0 && current_traf4_p3 !=0))
+        //   //if (!(current_flow4_p3 <=0 && current_traf4_p3 <=0))
+        //   fprintf(fp4, "%f,%f\n", current_flow4_p3, current_traf4_p3);
+        //   fclose(fp4);
           if ((current_flow4_p3 !=0 && current_traf4_p3 !=0))
           //if (!(current_flow4_p3 <=0 && current_traf4_p3 <=0))
           {
+            if(p->data_counter4_p3>=10){
+                fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p3.log","a+");
+                fprintf(fp4, "%f,%f\n", current_flow4_p3, current_traf4_p3);
+                fclose(fp4);
               p->flow_arr4_p3[p->data_counter4_p3] = current_flow4_p3;
               p->traffic_arr4_p3[p->data_counter4_p3] = current_traf4_p3;
+            }
           p->data_counter4_p3++;
           }
-          if(p->data_counter4_p3 == DATANUM)
+          if(p->data_counter4_p3 == DATANUM+10)
           {
             p->writing4_p3 =4;
             //p->data_counter4=0;
@@ -3480,7 +3538,7 @@ void abnormal_detect4(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data4_p3,p->data_counter4_p3);
           float temp4_p3;
-        //   fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug4_p3.log","a+");
+        //   fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug4_p3.log","a+");
           for(int i=0;i<p->data_counter4_p3;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3495,10 +3553,10 @@ void abnormal_detect4(struct ofproto *p)
           p->loOP_threshold4_p3 = (2.0/3) * p->loOP_threshold4_p3;
             // fclose(fp4);
           gettimeofday(&end4_p3, NULL);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time4_p3.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time4_p3.log","a+");
         //   fprintf(fp4,"%lu\n",(end4_p3.tv_sec - start4_p3.tv_sec)*1000000+end4_p3.tv_usec-start4_p3.tv_usec);
         //   fclose(fp4);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training4_p3.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training4_p3.log","a+");
         //   for(int i=0;i<p->data_counter4_p3; i++)
         //   {
         //       fprintf(fp4,"%f,%f,%f,%f\n",p->Data4_p3[i]->n_flow_norm,p->Data4_p3[i]->traffic_norm,p->Data4_p3[i]->LoOP,p->loOP_threshold4_p3);
@@ -3522,7 +3580,7 @@ void abnormal_detect4(struct ofproto *p)
         if (!(p->loOP_status4_p3 >=0 && p->loOP_status4_p3 <= 1))
                 p->loOP_status4_p3 = 0;
             value4_3 = p->loOP_status4_p3;
-	trigger_send_anomaly_detection4_p3(p);
+	//trigger_send_anomaly_detection4_p3(p);
           if (p->loOP_status4_p3 > p->loOP_threshold4_p3 && p->reported4_p3 == false)
               {
                   p->k_thres4_p3 ++;
@@ -3536,7 +3594,7 @@ void abnormal_detect4(struct ofproto *p)
                   p->k_thres4_p3 =0;
               }
 
-          fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update4_p3.log","w+");
+          fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update4_p3.log","w+");
           fprintf(fp4,"%f\n",p->loOP_status4_p3);
           fclose(fp4);
           }
@@ -3554,17 +3612,22 @@ void abnormal_detect4(struct ofproto *p)
         if (p->data_counter4_p4 == 0 || p->writing4_p4 ==1)
         {
           p->writing4_p4 = 1;
-          fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training4_p4.log","a+");
-          if ((current_flow4_p4 !=0 && current_traf4_p4 !=0))
-          fprintf(fp4, "%f,%f\n", current_flow4_p4, current_traf4_p4);
-          fclose(fp4);
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p4.log","a+");
+        //   if ((current_flow4_p4 !=0 && current_traf4_p4 !=0))
+        //   fprintf(fp4, "%f,%f\n", current_flow4_p4, current_traf4_p4);
+        //   fclose(fp4);
           if ((current_flow4_p4 !=0 && current_traf4_p4 !=0))
           {
-              p->flow_arr4_p4[p->data_counter4_p4] = current_flow4_p4;
-              p->traffic_arr4_p4[p->data_counter4_p4] = current_traf4_p4;
+              if(p->data_counter4_p4>=10){
+                  fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training4_p4.log","a+");
+                    fprintf(fp4, "%f,%f\n", current_flow4_p4, current_traf4_p4);
+                    fclose(fp4);
+                    p->flow_arr4_p4[p->data_counter4_p4] = current_flow4_p4;
+                    p->traffic_arr4_p4[p->data_counter4_p4] = current_traf4_p4;
+            }
           p->data_counter4_p4++;
           }
-          if(p->data_counter4_p4 == DATANUM)
+          if(p->data_counter4_p4 == DATANUM+10)
           {
             p->writing4_p4 =4;
             //p->data_counter4=0;
@@ -3602,7 +3665,7 @@ void abnormal_detect4(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data4_p4,p->data_counter4_p4);
           float temp4_p4;
-        //   fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug4_p4.log","a+");
+        //   fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug4_p4.log","a+");
           for(int i=0;i<p->data_counter4_p4;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3617,10 +3680,10 @@ void abnormal_detect4(struct ofproto *p)
           p->loOP_threshold4_p4 = (2.0/3) * p->loOP_threshold4_p4;
             // fclose(fp4);
           gettimeofday(&end4_p4, NULL);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time4_p4.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time4_p4.log","a+");
         //   fprintf(fp4,"%lu\n",(end4_p4.tv_sec - start4_p4.tv_sec)*1000000+end4_p4.tv_usec-start4_p4.tv_usec);
         //   fclose(fp4);
-        //   fp4=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training4_p4.log","a+");
+        //   fp4=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training4_p4.log","a+");
         //   for(int i=0;i<p->data_counter4_p4; i++)
         //   {
         //       fprintf(fp4,"%f,%f,%f,%f\n",p->Data4_p4[i]->n_flow_norm,p->Data4_p4[i]->traffic_norm,p->Data4_p4[i]->LoOP,p->loOP_threshold4_p4);
@@ -3644,7 +3707,7 @@ void abnormal_detect4(struct ofproto *p)
         if (!(p->loOP_status4_p4 >=0 && p->loOP_status4_p4 <= 1))
                 p->loOP_status4_p4 = 0;
             value4_3 = p->loOP_status4_p4;
-	trigger_send_anomaly_detection4_p4(p);
+	//trigger_send_anomaly_detection4_p4(p);
           if (p->loOP_status4_p4 > p->loOP_threshold4_p4 && p->reported4_p4 == false)
               {
                   p->k_thres4_p4 ++;
@@ -3658,7 +3721,7 @@ void abnormal_detect4(struct ofproto *p)
                   p->k_thres4_p4 =0;
               }
 
-          fp4= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update4_p4.log","w+");
+          fp4= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update4_p4.log","w+");
           fprintf(fp4,"%f\n",p->loOP_status4_p4);
           fclose(fp4);
           }
@@ -3726,18 +3789,22 @@ void abnormal_detect5(struct ofproto *p)
       current_flow5_p3 = ((float)(now_recorded_n_flow5_p3 - p->last_recorded_n_flow5_p3))/CYCLE;
       current_traf5_p3 = abs(((double)now_recorded_n_bytes5_p3 - p->last_recorded_n_bytes5_p3))/CYCLE;
       
-    //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording5.log","a+");
-    //   fprintf(fp5, "%f,%f,",current_flow5,current_traf5);
-    //   fclose(fp5);
+      fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording5.log","a+");
+      fprintf(fp5, "%f,%f\n",current_flow5,current_traf5);
+      fclose(fp5);
 
-    //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording5_p2.log","a+");
-    //   fprintf(fp5, "%f,%f,",current_flow5_p2,current_traf5_p2);
-    //   fclose(fp5);
+      fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording5_p2.log","a+");
+      fprintf(fp5, "%f,%f\n",current_flow5_p2,current_traf5_p2);
+      fclose(fp5);
+
+      fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording5_p3.log","a+");
+      fprintf(fp5, "%f,%f\n",current_flow5_p2,current_traf5_p3);
+      fclose(fp5);
 
       if(p->training5==51)
      {    
         // if(p->data_counter5==0 || p->data_counter5 == DATANUM)
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training5.log","r");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp5==NULL || p->writing5 == 1)
@@ -3745,19 +3812,24 @@ void abnormal_detect5(struct ofproto *p)
         if (p->data_counter5 == 0 || p->writing5 ==1)
         {
           p->writing5=1;
-          fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training5.log","a+");
-          if (current_flow5 !=0 && current_traf5 !=0)
-          //if (!(current_flow5 <=0 && current_traf5 <=0))
-          fprintf(fp5, "%f,%f\n",current_flow5,current_traf5);
-          fclose(fp5);
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5.log","a+");
+        //   if (current_flow5 !=0 && current_traf5 !=0)
+        //   //if (!(current_flow5 <=0 && current_traf5 <=0))
+        //   fprintf(fp5, "%f,%f\n",current_flow5,current_traf5);
+        //   fclose(fp5);
           if (current_flow5 !=0 && current_traf5 !=0)
           //if (!(current_flow5 <=0 && current_traf5 <=0))
           {
-              p->flow_arr5[p->data_counter5] = current_flow5;
-              p->traffic_arr5[p->data_counter5] = current_traf5;
+              if(p->data_counter5>=10){
+                fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5.log","a+");
+                fprintf(fp5, "%f,%f\n",current_flow5,current_traf5);
+                fclose(fp5);
+                p->flow_arr5[p->data_counter5] = current_flow5;
+                p->traffic_arr5[p->data_counter5] = current_traf5;
+            }
             p->data_counter5++;
           }
-          if(p->data_counter5==DATANUM)
+          if(p->data_counter5==DATANUM+10)
           {
             p->writing5=5;
             //p->data_counter5=0;
@@ -3795,7 +3867,7 @@ void abnormal_detect5(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data5,p->data_counter5);
           float temp5;
-        //   fp5= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug5.log","a+");
+        //   fp5= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug5.log","a+");
           for(int i=0;i<p->data_counter5;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3815,10 +3887,10 @@ void abnormal_detect5(struct ofproto *p)
           p->loOP_threshold5 = (2.0/3)*p->loOP_threshold5;
             // fclose(fp5);
           gettimeofday(&end5, NULL);
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time5.log","a+");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time5.log","a+");
         //   fprintf(fp5,"%lu\n",(end5.tv_sec - start5.tv_sec)*1000000+end5.tv_usec-start5.tv_usec);
         //   fclose(fp5);
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training5.log","a+");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training5.log","a+");
         //   for(int i=0;i<p->data_counter5;i++)
         //   {
         //       fprintf(fp5,"%f,%f,%f,%f\n",p->Data5[i]->n_flow_norm,p->Data5[i]->traffic_norm,p->Data5[i]->LoOP,p->loOP_threshold5);
@@ -3843,7 +3915,7 @@ void abnormal_detect5(struct ofproto *p)
         if (!(p->loOP_status5 >=0 && p->loOP_status5 <= 1))
                 p->loOP_status5 = 0;
             value5_1 = p->loOP_status5;
-	trigger_send_anomaly_detection5_p1(p);
+	//trigger_send_anomaly_detection5_p1(p);
           if (p->loOP_status5 > p->loOP_threshold5 && p->reported5 == false)
               {
                   p->k_thres5++;
@@ -3857,7 +3929,7 @@ void abnormal_detect5(struct ofproto *p)
                   p->k_thres5 =0;
               }
 
-          fp5= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update5_p1.log","w+");
+          fp5= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update5_p1.log","w+");
           fprintf(fp5,"%f\n",p->loOP_status5);
           fclose(fp5);
           }
@@ -3870,7 +3942,7 @@ void abnormal_detect5(struct ofproto *p)
       if(p->training5_p2==51)
      {    
         // if(p->data_counter5_p2==0 || p->data_counter5_p2 == DATANUM)
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training5_p2.log","r");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5_p2.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp5_p2==NULL || p->writing5_p2 == 1)
@@ -3878,19 +3950,24 @@ void abnormal_detect5(struct ofproto *p)
         if (p->data_counter5_p2 == 0 || p->writing5_p2 ==1)
         {
           p->writing5_p2=1;
-          fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training5_p2.log","a+");
-          if (current_traf5_p2 != 0 && current_flow5_p2 != 0)
-          //if (!(current_flow5_p2 <=0 && current_traf5_p2 <=0))
-          fprintf(fp5, "%f,%f\n",current_flow5_p2,current_traf5_p2);
-          fclose(fp5);
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5_p2.log","a+");
+        //   if (current_traf5_p2 != 0 && current_flow5_p2 != 0)
+        //   //if (!(current_flow5_p2 <=0 && current_traf5_p2 <=0))
+        //   fprintf(fp5, "%f,%f\n",current_flow5_p2,current_traf5_p2);
+        //   fclose(fp5);
           if (current_traf5_p2 != 0 && current_flow5_p2 != 0)
           //if (!(current_flow5_p2 <=0 && current_traf5_p2 <=0))
           {
-              p->flow_arr5_p2[p->data_counter5_p2] = current_flow5_p2;
-              p->traffic_arr5_p2[p->data_counter5_p2] = current_traf5_p2;
+              if(p->data_counter5_p2>=10){
+                fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5_p2.log","a+");
+                fprintf(fp5, "%f,%f\n",current_flow5_p2,current_traf5_p2);
+                fclose(fp5);
+                    p->flow_arr5_p2[p->data_counter5_p2] = current_flow5_p2;
+                    p->traffic_arr5_p2[p->data_counter5_p2] = current_traf5_p2;
+              }
              p->data_counter5_p2++;
           }
-          if(p->data_counter5_p2==DATANUM)
+          if(p->data_counter5_p2==DATANUM+10)
           {
             p->writing5_p2=5;
             //p->data_counter5=0;
@@ -3928,7 +4005,7 @@ void abnormal_detect5(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data5_p2,p->data_counter5_p2);
           float temp5_p2;
-        //   fp5= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug5_p2.log","a+");
+        //   fp5= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug5_p2.log","a+");
           for(int i=0;i<p->data_counter5_p2;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -3948,10 +4025,10 @@ void abnormal_detect5(struct ofproto *p)
           p->loOP_threshold5_p2 = (2.0/3)*p->loOP_threshold5_p2;
             // fclose(fp5);
           gettimeofday(&end5_p2, NULL);
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time5_p2.log","a+");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time5_p2.log","a+");
         //   fprintf(fp5,"%lu\n",(end5_p2.tv_sec - start5_p2.tv_sec)*1000000+end5_p2.tv_usec-start5_p2.tv_usec);
         //   fclose(fp5);
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training5_p2.log","a+");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training5_p2.log","a+");
         //   for(int i=0;i<p->data_counter5_p2;i++)
         //   {
         //       fprintf(fp5,"%f,%f,%f,%f\n",p->Data5_p2[i]->n_flow_norm,p->Data5_p2[i]->traffic_norm,p->Data5_p2[i]->LoOP,p->loOP_threshold5_p2);
@@ -3976,7 +4053,7 @@ void abnormal_detect5(struct ofproto *p)
         if (!(p->loOP_status5_p2 >=0 && p->loOP_status5_p2 <= 1))
                 p->loOP_status5_p2 = 0;
         value5_2 = p->loOP_status5_p2;
-		trigger_send_anomaly_detection5_p2(p);
+		//trigger_send_anomaly_detection5_p2(p);
           if (p->loOP_status5_p2 > p->loOP_threshold5_p2 && p->reported5_p2 == false)
               {
                   p->k_thres5_p2++;
@@ -3990,7 +4067,7 @@ void abnormal_detect5(struct ofproto *p)
                   p->k_thres5_p2 =0;
               }
 
-          fp5= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update5_p2.log","w+");
+          fp5= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update5_p2.log","w+");
           fprintf(fp5,"%f\n",p->loOP_status5_p2);
           fclose(fp5);
           }
@@ -4003,7 +4080,7 @@ void abnormal_detect5(struct ofproto *p)
        if(p->training5_p3==51)
      {    
         // if(p->data_counter5_p3==0 || p->data_counter5_p3 == DATANUM)
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training5_p3.log","r");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5_p3.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp5_p3==NULL || p->writing5_p3 == 1)
@@ -4011,19 +4088,24 @@ void abnormal_detect5(struct ofproto *p)
         if (p->data_counter5_p3 == 0 || p->writing5_p3 ==1)
         {
           p->writing5_p3=1;
-          fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training5_p3.log","a+");
-          if (current_traf5_p3 != 0 && current_flow5_p3 != 0)
-          //if (!(current_flow5_p3 <=0 && current_traf5_p3 <=0))
-          fprintf(fp5, "%f,%f\n",current_flow5_p3,current_traf5_p3);
-          fclose(fp5);
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5_p3.log","a+");
+        //   if (current_traf5_p3 != 0 && current_flow5_p3 != 0)
+        //   //if (!(current_flow5_p3 <=0 && current_traf5_p3 <=0))
+        //   fprintf(fp5, "%f,%f\n",current_flow5_p3,current_traf5_p3);
+        //   fclose(fp5);
           if (current_traf5_p3 != 0 && current_flow5_p3 != 0)
           //if (!(current_flow5_p3 <=0 && current_traf5_p3 <=0))
           {
+            if(p->data_counter5_p3>=10){
+                fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training5_p3.log","a+");
+                fprintf(fp5, "%f,%f\n",current_flow5_p3,current_traf5_p3);
+                fclose(fp5);
               p->flow_arr5_p3[p->data_counter5_p3] = current_flow5_p3;
               p->traffic_arr5_p3[p->data_counter5_p3] = current_traf5_p3;
+            }
              p->data_counter5_p3++;
           }
-          if(p->data_counter5_p3==DATANUM)
+          if(p->data_counter5_p3==DATANUM+10)
           {
             p->writing5_p3=5;
             //p->data_counter5=0;
@@ -4061,7 +4143,7 @@ void abnormal_detect5(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data5_p3,p->data_counter5_p3);
           float temp5_p3;
-        //   fp5= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug5_p3.log","a+");
+        //   fp5= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug5_p3.log","a+");
           for(int i=0;i<p->data_counter5_p3;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -4081,10 +4163,10 @@ void abnormal_detect5(struct ofproto *p)
           p->loOP_threshold5_p3 = (2.0/3)*p->loOP_threshold5_p3;
             // fclose(fp5);
           gettimeofday(&end5_p3, NULL);
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time5_p3.log","a+");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time5_p3.log","a+");
         //   fprintf(fp5,"%lu\n",(end5_p3.tv_sec - start5_p3.tv_sec)*1000000+end5_p3.tv_usec-start5_p3.tv_usec);
         //   fclose(fp5);
-        //   fp5=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training5_p3.log","a+");
+        //   fp5=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training5_p3.log","a+");
         //   for(int i=0;i<p->data_counter5_p3;i++)
         //   {
         //       fprintf(fp5,"%f,%f,%f,%f\n",p->Data5_p3[i]->n_flow_norm,p->Data5_p3[i]->traffic_norm,p->Data5_p3[i]->LoOP,p->loOP_threshold5_p3);
@@ -4109,7 +4191,7 @@ void abnormal_detect5(struct ofproto *p)
         if (!(p->loOP_status5_p3 >=0 && p->loOP_status5_p3 <= 1))
                 p->loOP_status5_p3 = 0;
         value5_2 = p->loOP_status5_p3;
-		trigger_send_anomaly_detection5_p3(p);
+		//trigger_send_anomaly_detection5_p3(p);
           if (p->loOP_status5_p3 > p->loOP_threshold5_p3 && p->reported5_p3 == false)
               {
                   p->k_thres5_p3++;
@@ -4123,7 +4205,7 @@ void abnormal_detect5(struct ofproto *p)
                   p->k_thres5_p3 =0;
               }
 
-          fp5= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update5_p3.log","w+");
+          fp5= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update5_p3.log","w+");
           fprintf(fp5,"%f\n",p->loOP_status5_p3);
           fclose(fp5);
           }
@@ -4189,22 +4271,22 @@ void abnormal_detect6(struct ofproto *p)
       current_flow6_p3 = ((float)(now_recorded_n_flow6_p3 - p->last_recorded_n_flow6_p3))/CYCLE;
       current_traf6_p3 = abs(((double)now_recorded_n_bytes6_p3 - p->last_recorded_n_bytes6_p3))/CYCLE;
       
-    //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording6.log","a+");
-    //   fprintf(fp6, "%f,%f,",current_flow6,current_traf6);
-    //   fclose(fp6);
+      fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording6.log","a+");
+      fprintf(fp6, "%f,%f,",current_flow6,current_traf6);
+      fclose(fp6);
 
-      fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording6_p2.log","a+");
+      fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording6_p2.log","a+");
       fprintf(fp6, "%f,%f,",current_flow6_p2, current_traf6_p2);
       fclose(fp6);
 
-    //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/data_recording6_p3.log","a+");
-    //   fprintf(fp6, "%f,%f,",current_flow6_p3, current_traf6_p3);
-    //   fclose(fp6);
+      fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/data_recording6_p3.log","a+");
+      fprintf(fp6, "%f,%f,",current_flow6_p3, current_traf6_p3);
+      fclose(fp6);
 
       if(p->training6==61)
      {    
         // if(p->data_counter6==0 || p->data_counter6 == DATANUM)
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training6.log","r");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp6==NULL || p->writing6 == 1)
@@ -4212,19 +4294,24 @@ void abnormal_detect6(struct ofproto *p)
         if (p->data_counter6 == 0|| p->writing6 ==1)
         {
           p->writing6=1;
-          fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training6.log","a+");
-        //   if (!(current_flow6 <=0 && current_traf6 <=0))
-          if (current_traf6 != 0 && current_flow6 != 0)
-          fprintf(fp6, "%f,%f\n",current_flow6,current_traf6);
-          fclose(fp6);
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6.log","a+");
+        // //   if (!(current_flow6 <=0 && current_traf6 <=0))
+        //   if (current_traf6 != 0 && current_flow6 != 0)
+        //   fprintf(fp6, "%f,%f\n",current_flow6,current_traf6);
+        //   fclose(fp6);
         //   if (!(current_flow6 <=0 && current_traf6 <=0))
         if (current_traf6 != 0 && current_flow6 != 0)
           {
-              p->flow_arr6[p->data_counter6] = current_flow6;
-              p->traffic_arr6[p->data_counter6] = current_traf6;
+            if(p->data_counter6>=10){
+                fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6.log","a+");
+                fprintf(fp6, "%f,%f\n",current_flow6,current_traf6);
+                fclose(fp6);
+                p->flow_arr6[p->data_counter6] = current_flow6;
+                p->traffic_arr6[p->data_counter6] = current_traf6;
+            }
           p->data_counter6++;
           }
-          if(p->data_counter6==DATANUM)
+          if(p->data_counter6==DATANUM+10)
           {
             p->writing6 =6;
             //p->data_counter6=0;
@@ -4260,7 +4347,7 @@ void abnormal_detect6(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data6,p->data_counter6);
           float temp6;
-        //   fp6= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug6.log","a+");
+        //   fp6= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug6.log","a+");
           for(int i=0;i<p->data_counter6;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -4280,10 +4367,10 @@ void abnormal_detect6(struct ofproto *p)
           p->loOP_threshold6 = (2.0/3)*p->loOP_threshold6;
             // fclose(fp6);
           gettimeofday(&end6, NULL);
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time6.log","a+");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time6.log","a+");
         //   fprintf(fp6,"%lu\n",(end6.tv_sec - start6.tv_sec)*1000000+end6.tv_usec-start6.tv_usec);
         //   fclose(fp6);
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training6.log","a+");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training6.log","a+");
         //   for(int i=0;i<p->data_counter6;i++)
         //   {
         //       fprintf(fp6,"%f,%f,%f,%f\n",p->Data6[i]->n_flow_norm,p->Data6[i]->traffic_norm,p->Data6[i]->LoOP,p->loOP_threshold6);
@@ -4322,7 +4409,7 @@ void abnormal_detect6(struct ofproto *p)
                   p->k_thres6 =0;
               }
 
-          fp6= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update6_p1.log","w+");
+          fp6= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update6_p1.log","w+");
           fprintf(fp6,"%f\n",p->loOP_status6);
           fclose(fp6);
           }
@@ -4336,7 +4423,7 @@ void abnormal_detect6(struct ofproto *p)
       if(p->training6_p2==61)
      {    
         // if(p->data_counter6_p2==0 || p->data_counter6_p2 == DATANUM)
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training6_p2.log","r");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6_p2.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp6_p2==NULL || p->writing6_p2 == 1)
@@ -4344,19 +4431,24 @@ void abnormal_detect6(struct ofproto *p)
         if (p->data_counter6_p2 == 0 || p->writing6_p2 ==1)
         {
           p->writing6_p2=1;
-          fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training6_p2.log","a+");
-        //   if (!(current_flow6_p2 <=0 && current_traf6_p2 <=0))
-          if (current_flow6_p2 != 0 && current_traf6_p2 != 0)
-          fprintf(fp6, "%f,%f\n",current_flow6_p2,current_traf6_p2);
-          fclose(fp6);
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6_p2.log","a+");
+        // //   if (!(current_flow6_p2 <=0 && current_traf6_p2 <=0))
+        //   if (current_flow6_p2 != 0 && current_traf6_p2 != 0)
+        //   fprintf(fp6, "%f,%f\n",current_flow6_p2,current_traf6_p2);
+        //   fclose(fp6);
           //if (!(current_flow6_p2 <=0 && current_traf6_p2 <=0))
           if (current_flow6_p2 != 0 && current_traf6_p2 != 0)
           {
+            if(p->data_counter6_p2>=10){
+                 fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6_p2.log","a+");
+                fprintf(fp6, "%f,%f\n",current_flow6_p2,current_traf6_p2);
+                fclose(fp6);
               p->flow_arr6_p2[p->data_counter6_p2] = current_flow6_p2;
               p->traffic_arr6_p2[p->data_counter6_p2] = current_traf6_p2;
+            }
                 p->data_counter6_p2++;
           }
-          if(p->data_counter6_p2==DATANUM)
+          if(p->data_counter6_p2==DATANUM+10)
           {
             p->writing6_p2 =6;
             //p->data_counter6=0;
@@ -4392,7 +4484,7 @@ void abnormal_detect6(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data6_p2,p->data_counter6_p2);
           float temp6_p2;
-        //   fp6= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug6_p2.log","a+");
+        //   fp6= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug6_p2.log","a+");
           for(int i=0;i<p->data_counter6_p2;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -4412,10 +4504,10 @@ void abnormal_detect6(struct ofproto *p)
           p->loOP_threshold6_p2 = (2.0/3)*p->loOP_threshold6_p2;
             // fclose(fp6);
           gettimeofday(&end6_p2, NULL);
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time6_p2.log","a+");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time6_p2.log","a+");
         //   fprintf(fp6,"%lu\n",(end6_p2.tv_sec - start6_p2.tv_sec)*1000000+end6_p2.tv_usec-start6_p2.tv_usec);
         //   fclose(fp6);
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training6_p2.log","a+");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training6_p2.log","a+");
         //   for(int i=0;i<p->data_counter6_p2;i++)
         //   {
         //       fprintf(fp6,"%f,%f,%f,%f\n",p->Data6_p2[i]->n_flow_norm,p->Data6_p2[i]->traffic_norm,p->Data6_p2[i]->LoOP,p->loOP_threshold6_p2);
@@ -4440,7 +4532,7 @@ void abnormal_detect6(struct ofproto *p)
             if (!(p->loOP_status6_p2 >=0 && p->loOP_status6_p2 <= 1))
                 p->loOP_status6_p2 = 0;
             value6_2 = p->loOP_status6_p2;
-	trigger_send_anomaly_detection6_p2(p);
+	//trigger_send_anomaly_detection6_p2(p);
           if (p->loOP_status6_p2 > p->loOP_threshold6_p2 && p->reported6_p2 == false)
               {
                   p->k_thres6_p2++;
@@ -4454,7 +4546,7 @@ void abnormal_detect6(struct ofproto *p)
                   p->k_thres6_p2 =0;
               }
 
-          fp6= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update6_p2.log","w+");
+          fp6= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update6_p2.log","w+");
           fprintf(fp6,"%f\n",p->loOP_status6_p2);
           fclose(fp6);
           }
@@ -4468,7 +4560,7 @@ void abnormal_detect6(struct ofproto *p)
       if(p->training6_p3==61)
      {    
         // if(p->data_counter6_p3==0 || p->data_counter6_p3 == DATANUM)
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training6_p3.log","r");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6_p3.log","r");
         // /*check training file exist or not .if not exist or not enough data, recording.
         //   if exists , move to calculating*/
         // //if(fp6_p3==NULL || p->writing6_p3 == 1)
@@ -4476,19 +4568,25 @@ void abnormal_detect6(struct ofproto *p)
         if (p->data_counter6_p3 ==0 || p->writing6_p3 ==1)
         {
           p->writing6_p3=1;
-          fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/training6_p3.log","a+");
-          //if (!(current_flow6_p3 <=0 && current_traf6_p3 <=0))
-          if (current_flow6_p3 !=0 && current_traf6_p3 != 0)
-          fprintf(fp6, "%f,%f\n",current_flow6_p3,current_traf6_p3);
-          fclose(fp6);
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6_p3.log","a+");
+        //   //if (!(current_flow6_p3 <=0 && current_traf6_p3 <=0))
+        //   if (current_flow6_p3 !=0 && current_traf6_p3 != 0)
+        //   fprintf(fp6, "%f,%f\n",current_flow6_p3,current_traf6_p3);
+        //   fclose(fp6);
          // if (!(current_flow6_p3 <=0 && current_traf6_p3 <=0))
          if (current_flow6_p3 !=0 && current_traf6_p3 != 0)
           {
-              p->flow_arr6_p3[p->data_counter6_p3] = current_flow6_p3;
-              p->traffic_arr6_p3[p->data_counter6_p3] = current_traf6_p3;
+              if(p->data_counter6_p3>=10){
+                    fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training6_p3.log","a+");
+            
+                    fprintf(fp6, "%f,%f\n",current_flow6_p3,current_traf6_p3);
+                    fclose(fp6);  
+                p->flow_arr6_p3[p->data_counter6_p3] = current_flow6_p3;
+                p->traffic_arr6_p3[p->data_counter6_p3] = current_traf6_p3;
+              }
             p->data_counter6_p3++;
           }
-          if(p->data_counter6_p3==DATANUM)
+          if(p->data_counter6_p3==DATANUM+10)
           {
             p->writing6_p3 =6;
             //p->data_counter6=0;
@@ -4524,7 +4622,7 @@ void abnormal_detect6(struct ofproto *p)
           //find threshold
           make_NN_train(p->Data6_p3,p->data_counter6_p3);
           float temp6_p3;
-        //   fp6= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/debug6_p3.log","a+");
+        //   fp6= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/debug6_p3.log","a+");
           for(int i=0;i<p->data_counter6_p3;i++)
           {
            // temp=1.0*calc_LOF(p->Data,p->data_counter,p->Data[i]);
@@ -4544,10 +4642,10 @@ void abnormal_detect6(struct ofproto *p)
           p->loOP_threshold6_p3 = (2.0/3)*p->loOP_threshold6_p3;
             // fclose(fp6);
           gettimeofday(&end6_p3, NULL);
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/time6_p3.log","a+");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/time6_p3.log","a+");
         //   fprintf(fp6,"%lu\n",(end6_p3.tv_sec - start6_p3.tv_sec)*1000000+end6_p3.tv_usec-start6_p3.tv_usec);
         //   fclose(fp6);
-        //   fp6=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/nor_training6_p3.log","a+");
+        //   fp6=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/nor_training6_p3.log","a+");
         //   for(int i=0;i<p->data_counter6_p3;i++)
         //   {
         //       fprintf(fp6,"%f,%f,%f,%f\n",p->Data6_p3[i]->n_flow_norm,p->Data6_p3[i]->traffic_norm,p->Data6_p3[i]->LoOP,p->loOP_threshold6_p3);
@@ -4572,7 +4670,7 @@ void abnormal_detect6(struct ofproto *p)
         if (!(p->loOP_status6_p3 >=0 && p->loOP_status6_p3 <= 1))
                 p->loOP_status6_p3 = 0;
             value6_3 = p->loOP_status6_p3;
-		trigger_send_anomaly_detection6_p3(p);
+		//trigger_send_anomaly_detection6_p3(p);
           if (p->loOP_status6_p3 > p->loOP_threshold6_p3 && p->reported6_p3 == false)
               {
                   p->k_thres6_p3++;
@@ -4586,7 +4684,7 @@ void abnormal_detect6(struct ofproto *p)
                   p->k_thres6_p3 =0;
               }
 
-          fp6= fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/update6_p3.log","w+");
+          fp6= fopen("/home/iot_team/6sw_fil_master/6sw_test/result/update6_p3.log","w+");
           fprintf(fp6,"%f\n",p->loOP_status6_p3);
           fclose(fp6);
           }
@@ -4692,7 +4790,7 @@ ofproto_run(struct ofproto *p)
     }
     connmgr_run(p->connmgr, handle_openflow);
     // FILE *f;
-    // f=fopen("/home/hollahieu/Desktop/6sw/6sw_port_fil-master/check_dpid.log","a+");
+    // f=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/check_dpid.log","a+");
     //   fprintf(f, "%ld\n",p->datapath_id);
     //   fclose(f);
 
