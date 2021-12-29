@@ -2212,6 +2212,16 @@ void abnormal_detect1(struct ofproto *p)
             p->traffic_arr1[p->data_counter1] = current_traf1;
           p->data_counter1++;
         }
+            if(p->data_counter1>=10){
+                fp1=fopen("/home/iot_team/6sw_fil_master/6sw_test/result/training1.log","a+");
+                fprintf(fp1, "%f,%f\n",current_flow1,current_traf1);
+                fclose(fp1);
+                p->flow_arr1[p->data_counter1] = current_flow1;
+                p->traffic_arr1[p->data_counter1] = current_traf1;
+            }
+            p->data_counter1++;
+                    //}
+            }
          // p->count_1 = p->data_counter1;
           if(p->data_counter1==DATANUM+10)
           {
